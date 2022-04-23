@@ -357,6 +357,16 @@ function user_history() {
     | ([[ ${1:-} = --json ]] && cat || jq -r '["ID", "", "", "Name"], (.history[] | [.id, .text]) | @tsv')
 }
 
+function export_all_notes() {
+    assert_is_authenticated
+    echo "Downloading all notes..."
+
+    curl \
+      --cookie "$HEDGEDOC_COOKIES_FILE" \
+      --output myarchive.zip \
+      "${HEDGEDOC_SERVER}/me/export"
+}
+
 function delete_note() {
     local note_id="${1:-}"
     if [[ ! "$note_id" ]]; then
@@ -389,6 +399,9 @@ function main() {
             ;;
         export)
             export_note "${1:-}" "${2:-}" "${3:-}"
+            ;;
+        export-all)
+            export_all_notes
             ;;
         delete)
             delete_note "${1:-}"
